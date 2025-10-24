@@ -1,0 +1,16 @@
+﻿  @using Shared.Model.Response;
+@model LevelInfo
+<div class="point-symbol-radio-list">
+    @for (var i = 1; i <= 5; i++)
+    {
+        <div class="point-symbol-radio-item">
+                <input type="radio" name="@Model.Id" value=@("box"+i) id="@(Model.Id + i)" @("box" + i == Model.StoppageImage ? "checked" : "")>
+            <label for="@(Model.Id+@i)">
+                <img src="~/assets/images/box@(i).png" />
+            </label>
+        </div>
+    }
+    <p class="mb-0 stopage-select-msg">
+        Select Stoppage Icon
+    </p>
+</div>

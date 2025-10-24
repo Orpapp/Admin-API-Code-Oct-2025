@@ -1,0 +1,94 @@
+﻿@model Shared.Model.Request.Account.RegistrationRequest
+@using Shared.Common
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    @await Html.PartialAsync("_AccountPagesCSSPartial")
+    <title>Registration</title>
+</head>
+
+<body class="outer" style="width:99%">
+
+    <!-- main-body -->
+    <main class="main-body" style="margin-top:10%">
+        <div class="content">
+
+            <!-- content -->
+            <div class="row flex-fill g-4">
+                <div class="col-md-12 d-flex align-items-center justify-content-center">
+                    <div class="outer-box" style="width: 60%;">
+                        <div class="outer-box-header">
+                            <h1 class="pb-0">Sign Up</h1>
+                        </div>
+                        <form id="frmSignup" method="post">
+                            <div class="row g-3">
+                                <div class="col-md-12">
+                                    <label>Name</label>
+                                    <div class="position-relative">
+                                        <input type="text" asp-for="FirstName" class="form-control"
+                                               placeholder="Name" maxlength="100" />
+                                    </div>
+                                    <span asp-validation-for="FirstName" class="text-danger"></span>
+                                </div>
+                                <div class="col-md-12">
+                                    <label>Email</label>
+                                    <div class="position-relative">
+                                        <input type="text" asp-for="Email" class="form-control"
+                                               placeholder="Email" maxlength="100" />
+                                    </div>
+                                    <span asp-validation-for="Email" class="text-danger"></span>
+                                </div>
+                                <div class="col-md-12">
+                                    <label>Password</label>
+                                    <div class="position-relative">
+                                        <input type="password" asp-for="Password" class="form-control input-password"
+                                               placeholder="Password" maxlength="20" />
+                                    </div>
+                                    <span asp-validation-for="Password" class="text-danger"></span>
+                                </div>
+                                <div class="col-md-12">
+                                    <label>Confirm Password</label>
+                                    <div class="position-relative">
+                                        <input type="password" asp-for="ConfirmPassword" class="form-control input-password"
+                                               placeholder="Confirm Password" maxlength="20" />
+                                    </div>
+                                    <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+                                </div>
+                                <div class="col-md-12 pt-2">
+                                    <button type="button" class="btn btn-primary w-100 text-center" onclick="SignUp(this)">
+                                        Submit
+                                    </button>
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="text-center w-100 pt-2 signUpLink">
+                                        <p>Already have an account?  <b><a href="@Url.Action("Login","Account")">Sign In</a></b></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Js -->
+    @await Html.PartialAsync("_JsScriptsPartial")
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+    @await Html.PartialAsync("_CommonScriptsPartial")
+    <environment include="Development">
+        <script src="~/sitejs/loginsignup.js"></script>
+    </environment>
+    <environment exclude="Development">
+        <script src="~/js/loginsignup.min.js"></script>
+    </environment>
+</body>
+</html>

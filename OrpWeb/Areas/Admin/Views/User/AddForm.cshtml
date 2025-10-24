@@ -1,0 +1,176 @@
+﻿@using Shared.Common.Enums;
+@using Shared.Common;
+@using Shared.Model.Request.Admin;
+@model AddFormRequestModel
+<div class="content">
+    <div class="row flex-fill g-4">
+        <div class="col-md-12">
+            <div class="white-box">
+                <div class="white-box-header">
+                    <h1>Add Form</h1>
+                </div>
+                <form class="w-100" id="AddForm" method="post" enctype="multipart/form-data">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="" class="form-label">Numeric</label><span class="text-danger">*</span>
+                                @Html.TextBoxFor(m => m.NumericValue, new { @tabindex = "1", @class = "form-control numbersOnly", @maxlength="9", @placeholder = "Numeric" })
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="" class="form-label">Decimal</label><span class="text-danger">*</span>
+                                @Html.TextBoxFor(m => m.DecimalValue, new { @tabindex = "2", @class = "form-control decimalOnly", @maxlength="14", @placeholder = "Decimal" })
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="" class="form-label">Text</label><span class="text-danger">*</span>
+                                @Html.TextBoxFor(m => m.TextValue, new {@tabindex = "3", @class = "form-control text-capitalize", @maxlength="100", @placeholder = "Text" })
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="" class="form-label">Dropdown</label>
+                                @Html.DropDownListFor(m => m.DropdownValue, EnumExtensions.ConvertEnumToListWithValuesAndDescriptions<DropdownTypeEnum>().ToList(), "--Select--", new { @class = "form-control form-select"})
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="" class="form-label">Radio Button</label>
+                                @Html.RadioButtonFor(m => m.RadioButtonValue, true, new { @class = "form-check-input", @checked = "checked" })
+                                <label class="form-check-label me-1" for="yes">Yes</label>
+                                @Html.RadioButtonFor(m => m.RadioButtonValue, false, new { @class = "form-check-input", @type = "radio" })
+                                <label class="form-check-label" for="no">No</label>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="" class="form-label">Checkbox</label><span class="text-danger">*</span>
+                                <label>
+                                    @Html.CheckBoxFor(model => model.CheckBoxValue1)
+                                    Check Box Value 1
+                                </label>
+                                <label>
+                                    @Html.CheckBoxFor(model => model.CheckBoxValue2)
+                                    Check Box Value 2
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="" class="form-label">Multi Select Check Box</label>
+                                @foreach (var subject in Model.SubjectsList)
+                                {
+                                    <div>
+                                        <label>
+                                            <input type="checkbox" name="SelectedSubjects" value="@subject"
+                                            @(Model.SelectedSubjects.Contains(subject) ? "checked" : "") />
+                                            @subject
+                                        </label>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="" class="form-label">Select Technology</label>
+                                @Html.TextBoxFor(m => m.AutoCompleteValue, new{@id = "autocompleteInput", @placeholder = "Autocomplete"})
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="" class="form-label">Multi Select Dropdown</label>
+                                <select name="SelectedProfile" multiple>
+                                    @foreach (var profile in Enum.GetValues(typeof(MultiselectDropdownEnum)))
+                                    {
+                                        
+                                        <option value="@profile.ToString()">
+                                            @profile
+                                        </option>
+                                    }
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="mb-3">
+                                <label for="datepicker">Select a Date:</label>
+                                <div class="calendarOuter" style="position:relative">
+                                    @Html.TextBoxFor(model => model.DatePickerValue, "{0:d-M-Y}", new { maxlength = "100", @class = "form-control datetimepicker", @autocomplete = "off", @tabindex = "1", @onpaste = "return false", @placeholder = "Date" })
+                                    <i class="fas fa-calendar-alt" style=" position: absolute; top: 11px; right: 10px; cursor:pointer" id="DateIcon"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-2">
+                            <div class="mb-3">
+                                <label class="form-label w-100">Start Date</label>
+                                <div class="calendarOuter" style="position:relative">
+                                    @Html.TextBoxFor(model => model.StartDate, "{0:d-M-Y}", new { maxlength = "100", @class = "form-control datetimepicker", @autocomplete = "off", @readonly = "readonly", @tabindex = "1", @onpaste = "return false", @placeholder = "Start Date" })
+                                    <i class="fas fa-calendar-alt" style=" position: absolute; top: 11px; right: 10px; cursor:pointer" id="StartDateIcon"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="mb-3">
+                                <label class="form-label w-100">End Date</label>
+                                <div class="calendarOuter" style="position:relative">
+                                    @Html.TextBoxFor(model => model.EndDate, "{0:d-M-Y}", new { maxlength = "100", @class = "form-control datetimepicker", @autocomplete = "off", @readonly = "readonly", @tabindex = "1", @onpaste = "return false", @placeholder = "End Date" })
+                                    <i class="fas fa-calendar-alt" style=" position: absolute; top: 11px; right: 10px; cursor:pointer" id="EndDateIcon"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-1">
+                            <div class="mb-3">
+                                <label for="timepicker">Select a Time:</label>
+                                <div class="calendarOuter" style="position:relative">
+                                    @Html.TextBoxFor(model => model.TimePickerValue, "{H:i}", new { maxlength = "100", @class = "form-control datetimepicker", @autocomplete = "off", @tabindex = "1", @onpaste = "return false", @placeholder = "Time" })
+                                    <i class="fas fa-clock" style=" position: absolute; top: 11px; right: 10px; cursor:pointer" id="TimeIcon"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-1">
+                            <div class="mb-3">
+                                <label for="starttimepicker">Start Time</label>
+                                <div class="calendarOuter" style="position:relative">
+                                    @Html.TextBoxFor(model => model.StartTime, "{H:i}", new { maxlength = "100", @class = "form-control datetimepicker", @autocomplete = "off", @tabindex = "1", @onpaste = "return false", @placeholder = "Start Time" })
+                                    <i class="fas fa-clock" style=" position: absolute; top: 11px; right: 10px; cursor:pointer" id="StartTimeIcon"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-1">
+                            <div class="mb-3">
+                                <label for="endtimepicker">End Time</label>
+                                <div class="calendarOuter" style="position:relative">
+                                    @Html.TextBoxFor(model => model.EndTime, "{H:i}", new { maxlength = "100", @class = "form-control datetimepicker", @autocomplete = "off", @tabindex = "1", @onpaste = "return false", @placeholder = "End Time" })
+                                    <i class="fas fa-clock" style=" position: absolute; top: 11px; right: 10px; cursor:pointer" id="EndTimeIcon"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="mb-3">
+                                <div class="d-flex align-items-center justify-content-end flex-wrap">
+                                    <input class="btn btn-primary mw105 my-1" id="btnsubmit" type="button" value="Save" onclick="UpdateFormData(this);" style="margin-right:18px;">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts{
+<environment include="Development">
+        <script src="~/sitejs/form.js"></script>
+</environment>
+<environment exclude="Development">
+    <script src="~/js/form.min.js"></script>
+</environment>
+    <script>
+        $(document).ready(function () {
+            $("#Form").addClass('active');
+        });
+    </script>
+}
+

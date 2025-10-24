@@ -1,0 +1,239 @@
+﻿@model Shared.Model.DTO.Admin.Level.LevelImage
+@{
+
+}
+<style>
+    .addProductImg {
+        width: 115px;
+        height: 115px;
+        border-radius: 10px;
+        background: #0d6efd;
+        display: flex;
+    }
+
+    .addProductImgInput {
+        position: absolute;
+        opacity: 0;
+        height: 1px;
+        width: 1px;
+    }
+
+    .dvImage {
+        position: relative;
+        width: 115px;
+        border-radius: 10px;
+    }
+
+        .dvImage img {
+            border-radius: 10px;
+        }
+
+        .dvImage i {
+            position: absolute;
+            top: 2px;
+            right: 2px;
+            background: #fff;
+            width: 25px;
+            height: 25px;
+            border-radius: 30px;
+            text-align: center;
+        }
+</style>
+
+<div class="content">
+    <div class="row flex-fill g-4">
+        <div class="col-md-12">
+            <div class="white-box">
+                <div class="white-box-header">
+                    <h1>Update Level Background Image</h1>                   
+                </div>
+                @using (Html.BeginForm("UpdateLevelBackgroundImage", "LevelImage", FormMethod.Post, new { id = "frmUpdateBackgroundImage" }))
+                {
+                    <input type="hidden" value="false" id="imageDeleted" />
+                    <div class="row ">
+                        <div class="col-md-12">
+                            <label class="form-label">Background Image </label>
+                        </div>
+
+                        <div class="d-flex" >
+                            <div class="me-3">
+                                @Html.TextBoxFor(x => x.LevelPicture, new
+                                    {
+                                        @class = "position-absolute addProductImgInput",
+                                        @tabindex = "1",
+                                        @Placeholder = "Product Image",
+                                        @type = "file",
+                                        @id = "addProImg",
+                                        @accept = ".jpg,.png,.jpeg,.JPG,.PNG,.JPEG",
+                                        @onchange = "checkFileSize(this);"
+                                    })
+
+                                <label for="addProImg" class="addProductImg justify-content-center">
+                                    <img src="~/assets/images/addCircleIcon.svg" width="40" />
+                                </label>
+                            </div>
+
+                            <div class="col-md-3" id="showImage">
+                                @if (Model != null)
+                                {
+                                    @if (!string.IsNullOrEmpty(Model.LevelPicture))
+                                    {
+                                        <div class="dvImage">
+                                            <i><img src="~/assets/images/Deactive.png" style="height:15px; width:15px;" alt="Folder" onclick="RemoveImage()" /></i>
+                                            <img src="@Model.LevelPicture" class="img-fluid img" id="img" style="height:115px; width:115px; " />
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <div class="dvImage"> </div>
+                                    }
+                                }
+                                else
+                                {
+                                    <div class="dvImage" id="image"> </div>
+                                }
+                            </div>
+                        </div>
+
+
+                    </div>
+
+                    <div class="col-md-12 text-end">
+                        <a href="javascript:void(0);" id="btnSubmit" class="btn btn-primary btnSmheight" onclick="return AddBackgroundImage();">Save</a>
+                    </div>
+                }
+
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+@section scripts {
+
+    <environment include="Development">
+        <script src="~/sitejs/common/table.js" asp-append-version="true"></script>
+        <script src="~/sitejs/category.js" asp-append-version="true"></script>
+
+    </environment>
+    <environment exclude="Development">
+      
+    </environment>
+
+    <script>
+        $(document).ready(function () {
+            $("#LevelImage").addClass('active');
+        });
+    </script>
+}
+
+<script>
+
+    function RemoveImage() {
+        $(".dvImage").html('');
+        $("#addProImg").val('');
+        $("#imageDeleted").val(true);
+    }
+
+
+    function checkFileSize(input) {
+        toastr.remove();
+
+        var imgvalid = false;
+        if ($("#addProImg").val().length > 0) {
+            imgvalid = true;
+        }
+        else {
+            imgvalid = false;
+        }
+
+        var ImagevalidExt = ".jpg,.png,.jpeg,.JPG,.PNG,.JPEG";
+        var ImagevalidExtmaxSize = '5120';
+        var filePath = input.value;
+        var getFileExt = filePath.substring(filePath.lastIndexOf('.') + 1).toLowerCase();
+        var pos = ImagevalidExt.toLowerCase().indexOf(getFileExt);
+        if (pos < 0) {
+            $(input).val('');
+
+            toastr.error("Only Allow .jpg,.png,.jpeg,.JPG,.PNG,.JPEG");
+            return false;
+        }
+
+        if (imgvalid == true) {
+
+            $("#addProImg").blur();
+            if ($("#addProImg").val().length > 0) {
+                var sizeinmb = (addProImg.files[0].size / 1024 / 1024);
+                if (sizeinmb > 5) {
+                    $("#addProImg").val("");
+                    toastr.error("uploaded image should be smaller than 5mb in size");
+                    return false;
+                }
+
+                var imagefileobj = new Object();
+                imagefileobj.files = input.files[0];
+                var reader = new FileReader();
+                reader.onload = function (e) {
+                    var imagePath = '/assets/images/Deactive.png';
+                    var html = ' <i><img src="' + imagePath + '" style="height:15px; width:15px;" alt="Folder" onclick="RemoveImage()" /></i> <img src="' + e.target.result + '" class="img-fluid img" id="img" style="height:115px; width:115px;" />';
+                    $(input).hide();
+                    console.log(html);
+
+              
+                    $(".dvImage").html('');
+                    $(".dvImage").append(html);
+
+                    $("#imageDeleted").val(false);
+                }
+                reader.readAsDataURL(input.files[0]);
+
+                return true;
+            }
+
+
+        }
+        else {
+            return false;
+        }
+    }
+
+
+    function AddBackgroundImage() {
+        toastr.remove();
+
+        var files = $('#addProImg').prop("files");
+
+        formData = new FormData();
+        formData.append("formFile", files[0]);
+        formData.append("imageDeleted", $("#imageDeleted").val());
+
+        $.ajax({
+            type: 'Post',
+            url: "@Url.Action("UpdateLevelBackgroundImage", "LevelImage")",
+            data: formData,
+            cache: false,
+            contentType: false,
+            processData: false,
+            success: function (response) {
+                if (response.data) {
+                    $("#btnSubmit").removeAttr("onclick");
+                    console.log(response);
+                    toastr.success(response.message);
+                    setTimeout(function () {
+                        window.location.reload();
+                    }, 2000);
+                }
+                else {
+                    toastr.error(response.message);
+                }
+
+            },
+            error: function (response) {
+                toastr.error("Failed");
+            }
+        });
+    }
+
+
+</script>

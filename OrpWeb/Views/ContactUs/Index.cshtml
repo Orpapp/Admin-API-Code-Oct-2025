@@ -1,0 +1,41 @@
+﻿@model Shared.Model.WebUser.ContactUsRequestModel
+@{
+    ViewData["Title"] = "ContactUs";
+    Layout = "_LayoutOuter";
+}
+
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-6 offset-md-3">
+            <h2 class="text-center">Contact Us</h2>
+            <form id="contactus-frm">
+                <div class="form-group">
+                    <label for="name">Name:</label>
+                    <input asp-for="Name" type="text" class="form-control" placeholder="Enter your name">
+                    <span asp-validation-for="Name" class="text-danger"></span>
+
+                </div>
+                <div class="form-group">
+                    <label for="email">Email:</label>
+                    <input asp-for="Email" type="text" class="form-control" placeholder="Enter your email">
+                    <span asp-validation-for="Email" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label for="query">Query:</label>
+                    <textarea asp-for="Query" class="form-control" rows="4" placeholder="Enter your query"></textarea>
+                    <span asp-validation-for="Query" class="text-danger"></span>
+                </div>
+                <a href="javascript:void(0);" onclick="saveDetails('#contactus-frm', this);" class="btn btn-primary">Submit</a>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section scripts{
+    @await Html.PartialAsync("_JsScriptsPartial")
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+    @await Html.PartialAsync("_CommonScriptsPartial")
+    <script src="~/sitejs/user.js"></script>
+}
+
+

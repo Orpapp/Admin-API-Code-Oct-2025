@@ -1,0 +1,159 @@
+﻿@using Shared.Common
+@using Shared.Model.Request.Admin
+@model List<VoucherModel>
+
+<div class="content">
+    <div class="row flex-fill g-4">
+        <div class="col-md-12">
+            <div class="white-box">
+                <div class="white-box-header" style="margin-bottom:10px">
+                    <h1>Vouchers</h1>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-bordered table-striped">
+                        <thead>
+                            <tr>
+                                <th>Level</th>
+                                <th>Image</th>
+                                <th>Voucher Image</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @for (int i = 0; i < Model.Count; i++)
+                            {
+                                <tr>
+                                    <td>@Model[i].LevelNumber</td>
+                                    <td>
+                                       
+                                        <a href="@(Model[i].ImagePath == null ? "#" : (Model[i].ImagePath))" target="_blank">
+                                            <img onerror="this.src='@SiteKeys.SiteUrl@SiteKeys.DefaultVoucherImage';" src="@Model[i].ImagePath" id="voucher_Image_@Model[i].LevelNumber" class="img-thumbnail" style="width: 100px;" />
+                                        </a>
+                                       
+                                    </td>
+                                    <td>
+                                        <input type="file" name="VoucherImage" id="VoucherImage_@Model[i].LevelNumber" accept="image/*" class="form-control" data-level="@Model[i].LevelNumber" onchange="ShowVoucherImage(@Model[i].LevelNumber)" />
+                                        <input type="hidden" name="LevelNumber" value="@Model[i].LevelNumber" />
+                                    </td>
+                                    <td>
+                                        <button type="submit" class="btn btn-primary update-btn" data-level="@Model[i].LevelNumber" onclick="uploadVoucher(this,@Model[i].Id,@Model[i].LevelNumber)">Update</button>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+
+    <script>
+        $(document).ready(function () {
+            $("#Voucher").addClass('active');
+        });
+
+        function ShowVoucherImage(levelNumber) {
+
+            var fileInput = $('#VoucherImage_' + levelNumber);
+
+            // Default image URL (e.g. placeholder image when no image is uploaded)
+            let defaultImageUrl = $("#DefaultUserImage").val();
+            var level = fileInput.data("level");
+
+            if (fileInput[0].files.length > 0) {
+                toastr.remove();
+
+                let imageBox = $("#voucher_Image_" + level);
+                // Reset the image preview initially
+                imageBox.attr("src", "");
+                imageBox.hide();
+
+                var file = fileInput[0].files[0];
+
+                // Check if a valid file is selected
+                if (file) {
+                    // Validate file type (only .png or .jpg allowed)
+                    if (!file.type.match('image/jpeg') && !file.type.match('image/png')) {
+                        $(fileInput).val(""); // Clear the file input
+                        toastr.warning("Please upload an image in .png or .jpg format only.");
+                        imageBox.show();
+                        return false;
+                    }
+
+                    // Validate file size (must be less than 5MB)
+                    let sizeInMB = file.size / 1024 / 1024;
+                    if (sizeInMB > 5) {
+                        toastr.error("Uploaded image should be smaller than 5MB in size.");
+                        fileInput.val(""); // Clear the file input
+                        imageBox.show();
+                        return false;
+                    }
+
+                    // If the file is valid, show the preview
+                    imageBox.attr("src", URL.createObjectURL(file));
+                    $(imageBox).closest('a').attr("href", URL.createObjectURL(file)); // Optional: If you want a clickable preview
+                    imageBox.show();
+                }
+            } else {
+                // If no file is selected, show the default image
+                let imageBox = $("#voucher_Image_" + level);
+                imageBox.attr('src', defaultImageUrl);
+                imageBox.show();
+            }
+        }
+
+
+
+        function uploadVoucher(_this, id, levelNumber) {
+            toastr.remove();
+            var formData = new FormData();
+            var fileInput = $('#VoucherImage_' + levelNumber)[0].files[0];
+
+            if (!fileInput) {
+                toastr.error('Please select an image to upload.');
+                return;
+            }
+            EnableDisableButton($(_this), true);
+
+            formData.append("Id", id);
+            formData.append("LevelNumber", levelNumber);
+            formData.append("Image", fileInput);
+
+            $.ajax({
+                url: '/Admin/Voucher/UpdateVoucherImage',
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (response) {
+                    if (response.responsePacket) {
+                        toastr.success(response.responseMessage);
+                        setTimeout(function () {
+                            location.reload();
+                        }, setTimeoutIntervalEnum.onRedirection);
+                    }
+                    else {
+                        toastr.success(response.responseMessage);
+                    }
+                    EnableDisableButton($(_this), false);
+                },
+                error: function () {
+                    if (response.responseJSON) {
+                        toastr.error(response.responseJSON?.message)
+                        setTimeout(function () {
+                            location.reload();
+                        }, setTimeoutIntervalEnum.onRedirection);
+                    }
+                    else {
+                        toastr.error(somethingWrongMsg);
+                    }
+                    EnableDisableButton($(_this), false);
+                }
+            });
+        }
+    </script>
+}
+

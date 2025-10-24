@@ -1,0 +1,193 @@
+﻿@using Shared.Common;
+@using Shared.Model.Response;
+@model List<LevelInfo>
+@{
+    var levelId = ViewBag.LevelId;
+    var starImages = new[] { "star1.png", "star2.png", "star3.png", "star4.png", "star5.png" };
+}
+
+<div class="content">
+    <div class="row flex-fill g-4">
+        <div class="col-md-12">
+            <div class="white-box">
+                <div class="white-box-header">
+                    <h1>Manage Level</h1>
+                    <a class="btn btn-secondary mw105 my-1 me-3" href="@Url.Action("Index","Level",new { @Area ="Admin"})">Back To List</a>
+                </div>
+                @using (Html.BeginForm("Detail", "Level", FormMethod.Post, new { id = "frmUpdateLevel" }))
+                {
+                    @Html.HiddenFor(model => Model[0].PreviewsLevelTotalPoint, new { @Id = "PreviewsLevelTotalPoint" })
+
+                  
+                    <div class="stopage-wrapper">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="" class="form-label">Level</label><span class="text-danger">*</span>
+                                    @Html.TextBoxFor(model => Model[0].LevelId, new { @class = "form-control", @readonly = "readonly", @type = "number", @id = "levelId", @placeholder = "" })
+                                   
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="" class="form-label">Level Points</label><span class="text-danger">*</span>
+                                    
+                                    @Html.TextBoxFor(model => Model[0].TotalPoints, new { @class = "form-control totalPoints positiveNumericOnly", @readonly = "readonly", @type = "number", @placeholder = "Point" })
+                                </div>
+                            </div>
+                        </div>
+                        
+                        @for (int i = 0; i < Model.Count; i++)
+                        {
+                            @if (Model[i].StoppageType != "_First")
+                            {
+                                <div class="stopage-row">
+                                    @Html.HiddenFor(m => m[i].Id)
+                                    @Html.HiddenFor(m => m[i].StoppageType)
+                                    @Html.HiddenFor(m => m[i].LevelId)
+
+                                    <label for="" class="form-label me-3">Stoppage @(i + 1)</label>
+                                    @Html.TextBoxFor(x => Model[i].Points, new { @class = "form-control stopage-input positiveNumericOnly", @type = "number", @placeholder = "Point" })
+
+                                    <partial name='@Model[i].StoppageType' model='@Model[i]' />
+
+                                </div>
+                            }
+                        }
+
+                        <a class="btn btn-primary" id="btn" href="javascript:void(0);" onclick="return SaveLevel();"> Save </a>
+
+                    </div>
+                   
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <script>
+
+        $(document).ready(function () {
+            $("#Level").addClass('active');
+            // Set the value of LevelId input fields using jQuery
+            var levelId = '@levelId';
+            $("#levelId").val(levelId);
+
+            $('.stopage-row').each(function (index) {
+                // Find the input with name "[index].LevelId" within this .stopage-row
+                var levelIdInput = $(this).find('input[name$=".LevelId"]');
+
+                // Set the value of the input to levelId
+                levelIdInput.val(levelId);
+
+            });
+
+            $('.stopage-input').on('focusout', validateStoppageInput);
+
+            $('.stopage-row').last().find('input').prop('readonly', true);
+
+        });
+
+
+        function validateStoppageInput(isSave = 0) {
+            var i = 0;
+            let isDone = false;
+            toastr.remove();
+            $('.stopage-row').each(function (index) {
+                if (isDone) { return false; }
+                if (!isDone) {
+                    let $currentInput = $(this).find('.stopage-input').first();
+                    let currentValue = parseFloat($currentInput.val());
+
+                    if (currentValue === 0 || isNaN(currentValue)) {
+                        $currentInput.focus();
+                        toastr.remove();
+                        toastr.error('Stoppage point should be greater than 0.');
+                        i = i + 1;
+                        return false;
+                    }
+                    else {
+                        let previousLevelTotalPoint = parseFloat($("#PreviewsLevelTotalPoint").val());
+                        let minimumPoint = previousLevelTotalPoint + 10;
+                        if (minimumPoint > currentValue) {
+                            toastr.error(`Stoppage point should be a minimum of ${minimumPoint}`);
+                            $currentInput.focus();
+                            i = i + 1;
+                            isDone = true;
+                        }
+                        else {
+                            let $nextRow = $(this).next('.stopage-row');
+                            if ($nextRow.length) {
+                                let $nextInput = $nextRow.find('.stopage-input').first();
+                                let nextValue = parseFloat($nextInput.val());
+
+                                if (Math.abs(currentValue - nextValue) < 10) {
+                                    toastr.error('Stoppage point must differ by at least 10 from the next stoppage point.');
+                                    $currentInput.focus();
+                                    i = i + 1;
+                                    isDone = true;
+                                }
+                                else if (nextValue <= currentValue) {
+                                    toastr.remove();
+                                    toastr.error('Stoppage point should be less than next stoppage point.');
+                                    $currentInput.focus();
+                                    i = i + 1;
+                                    isDone = true;
+                                }
+                            }
+                        }
+
+                    }
+
+                }
+            });
+            return i;
+        }
+
+
+
+        function SaveLevel() {
+
+            var result = validateStoppageInput(1);
+            setTimeout(function () {
+                if (result == 0) {
+                    toastr.remove();
+
+                    var data = new FormData($("#frmUpdateLevel")[0]); 
+
+                    if ($("#frmUpdateLevel").valid()) {
+
+                        $.ajax({
+                            type: "POST",
+                            url: "@Url.Action("Detail", "Level", new { @Area = "Admin" })",
+                            data: data,
+                            processData: false,
+                            contentType: false,
+                            async: false,
+                            cache: false,
+
+                            success: function (response) {
+                                debugger;
+                                if (response.responsePacket) {
+                                    toastr.success(response.responseMessage);
+                                    setTimeout(function () {
+                                        window.location.href = "@Url.Action("Index", "Level", new { @Area = "Admin" })"
+                                    }, 2000);
+                                }
+                                else {
+                                    toastr.error(response.responseMessage);
+                                }
+                            },
+                            error: function (data) {
+                                toastr.error("Something went wrong");
+                            }
+                        });
+                    }
+                    else {
+                    }
+                }
+            }, 1500);
+        }
+    </script>
+}

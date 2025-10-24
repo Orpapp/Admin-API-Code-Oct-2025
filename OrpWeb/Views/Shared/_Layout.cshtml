@@ -1,0 +1,65 @@
+﻿@using Shared.Common;
+@{
+    var SessionUserName = SessionModel.UserDetailSession?.Name;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    @await Html.PartialAsync("_CSSPartial")
+    <title>Orp</title>
+</head>
+<body class="inner">
+    <div class="Loading" style="display: none">
+    </div>
+    <header class="header">
+        <div class="w-100 d-flex align-items-center">
+            <div class="menu-btn"><img src="~/assets/images/menu.svg" alt="menu" /></div>
+            <div class="dropdown ms-auto">
+                <a class="dropdown-toggle" href="javascript:void(0);" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    @SessionUserName
+                </a>
+                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                    <div class="profile-pic-box w-100 text-center">
+                        <div class="text-center">
+                            <a href="@Url.Action("Logout","Account",  new { Area = "" })" class="btn btn-danger">Log out</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- sidebar -->
+    <aside class="sidebar">
+        <button type="button" class="btn-close text-reset menu-btn" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        <div class="text-center w-100">
+            <img src="~/assets/images/logo.png" alt="logo-large" />
+        </div>
+        <ul>
+            <li id="MyProfile"><a href="@Url.Action("GetMyProfile", "User")"><i class="fas fa-user"></i>&nbsp; My Profile</a></li>
+            <li id="ChangePassword"><a href="@Url.Action("ChangePassword","User")"><i class="fa fa-key" aria-hidden="true"></i>&nbsp; ChangePassword</a></li>
+           
+        </ul>
+    </aside>
+    <div class="container-fluid">
+        <main role="main">
+            @RenderBody()
+        </main>
+    </div>
+
+    <footer class="border-top footer text-muted">
+        <div class="container">
+            &copy;@DateTime.Now.Year.ToString() - Orp All right reserved.
+        </div>
+    </footer>
+
+    @await Html.PartialAsync("_JsScriptsPartial")
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+    @await Html.PartialAsync("_CommonScriptsPartial")
+    
+    @RenderSection("Scripts", required: false)
+</body>
+</html>

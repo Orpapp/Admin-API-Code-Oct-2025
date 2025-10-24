@@ -1,0 +1,97 @@
+﻿@using Shared.Common;
+@using Shared.Model.DTO.Account;
+@model UserDetailsDto
+@{
+    //Layout = "~/Views/Shared/_LayoutUser.cshtml";
+    var defaultImageUrl = SiteKeys.SiteUrl + SiteKeys.DefaultUserImage;
+}
+<div class="content">
+    <div class="row flex-fill g-4">
+        <div class="col-md-12">
+            <div class="white-box">
+                <div class="white-box-header">
+                    <h1>My Profile</h1>
+                </div>
+                <form class="w-100" id="frmUpdateprofile">
+                    @Html.HiddenFor(x => x.UserId)
+                    <div class="row">
+
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="" class="form-label">Name</label><span class="text-danger">*</span>
+                                @Html.TextBoxFor(x => x.FirstName, new {@tabindex = "1", @class = "form-control text-capitalize", @maxlength="100", @placeholder = "Name" })
+                                @Html.ValidationMessageFor(x => x.FirstName, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="" class="form-label">Email</label><span class="text-danger">*</span>
+                                @Html.TextBoxFor(x => x.Email, new { @readonly = "true", @tabindex = "1", @class = "form-control", @placeholder = "Email" })
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="" class="form-label">Phone Number</label><span class="text-danger">*</span>
+                                @Html.TextBoxFor(x => x.PhoneNumber, new { @tabindex = "1", @class = "form-control numbersOnly", @maxlength = "15", @placeholder = "Phone Number" })
+                                @Html.ValidationMessageFor(x => x.PhoneNumber, "", new { @class = "text-danger"})
+                            </div>
+                        </div>
+                        @Html.HiddenFor(x => defaultImageUrl, new{ @id = "DefaultUserImage"})
+                        <div class="col-md-12">
+                            <div class="mb-3">
+                                <input type="hidden" asp-for="ProfileImage" id="ProfileImage" />
+                               
+                                <div class="col-md-12">
+                                    @if (Model.ProfileImage != null)
+                                    {
+                                        <a href="@(Model.ProfileImageUrl == null ? "#" : (Model.ProfileImageUrl))" target="_blank">
+                                            <img id="imgUser" onerror="if(this.src != '@SiteKeys.SiteUrl@SiteKeys.DefaultUserImage')this.src='@SiteKeys.SiteUrl@SiteKeys.DefaultUserImage';" src="@(Model.ProfileImageUrl)" alt="" style="height:70px;width:70px; display:block !important" class="rounded-circle">
+                                        </a>
+                                    }
+                                    else
+                                    {
+                                        <a href="#" target="_blank">
+                                            <img id="imgUser" type="hidden" src="@SiteKeys.SiteUrl@SiteKeys.DefaultUserImage" alt="" style="height:70px; width:70px; display:block !important" class="rounded-circle">
+                                        </a>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label>Profile Image<span class="text-danger">*</span><span style="color:darkgray">@(Model.ProfileImage != null ? "(to replace image please upload another one)" : "")</span></label>
+                                <br>
+                                <input type="file" asp-for="Image" class="position-absolute addUserImgInput" accept=".jpg,.png,.jpeg,.JPG,.PNG,.JPEG" id="images" onchange="ShowProfileImage(this)" />
+                                <br>
+                                <span class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="col-md-12">
+                            <div class="mb-3">
+                                <div class="d-flex align-items-center justify-content-end flex-wrap">
+                                    <input class="btn btn-primary mw105 my-1" id="btnsubmit" type="button" value="Update" onclick="UpdateProfile(this)" style="margin-right:18px;">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+<environment include="Development">
+        <script src="~/sitejs/user.js"></script>
+</environment>
+<environment exclude="Development">
+    <script src="~/js/user.min.js"></script>
+</environment>
+    <script>
+        $(document).ready(function () {
+            $("#MyProfile").addClass('active');
+        });
+    </script>
+}
+

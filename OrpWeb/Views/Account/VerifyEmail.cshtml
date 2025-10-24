@@ -1,0 +1,35 @@
+﻿@using Shared.Common;
+    @using Shared.Model.Request.Account;
+@model VerifyEmailRequestModel
+<!-- content -->
+<div class="row flex-fill g-4">
+    <div class="col-md-12 d-flex align-items-center justify-content-center">
+        <div class="outer-box">
+            <div class="outer-box-header">
+                <h1>Verify Email</h1>
+                <h6 style="text-align:center" class="text-danger">Your registered email is not verified.</h6>
+            </div>
+            <p>Please enter your email address. You will receive <br />a link to verify your email.</p>
+
+            <form id="VerifyEmailFrm">
+                <div class="row g-3">
+                    <div class="col-md-12">
+                        <label>Email</label>
+                        <div class="position-relative">
+                            <input type="text" asp-for=Email class="form-control input-email" placeholder="Email" maxlength="100" />
+                        </div>
+                        <span asp-validation-for="Email" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-12 pt-2">
+                        <button class="btn btn-primary w-100 text-center clsbtnsmt" type="button" onclick="SendVerifyEmailLink(this)">Submit</button>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="text-center w-100 pt-2 signUpLink">
+                            <p>Back to <b><a href="@Url.Action("Login","Account")">Sign In</a></b></p>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

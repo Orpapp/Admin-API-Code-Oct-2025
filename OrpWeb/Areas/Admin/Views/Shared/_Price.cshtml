@@ -1,0 +1,20 @@
+﻿
+@using Shared.Model.Response;
+@model LevelInfo
+<div class="point-symbol-radio-list">
+    <div class="point-symbol-radio-item">
+        <input type="radio" name="@Model.Id" id="@($"{Model.Id}1")" value="prize1" @(Model.StoppageImage == "prize1" ? "checked" : "")>
+        <label for="@($"{Model.Id}1")">
+            <img src="~/assets/images/prize1.png" alt="Prize 1" />
+        </label>
+    </div>
+    <div class="point-symbol-radio-item">
+        <input type="radio" name="@Model.Id" id="@($"{Model.Id}2")" value="prize2" @(Model.StoppageImage == "prize2" ? "checked" : "")>
+        <label for="@($"{Model.Id}2")">
+            <img src="~/assets/images/prize2.png" alt="Prize 2" />
+        </label>
+    </div>
+    <p class="mb-0 stopage-select-msg">
+        Select Prize Icon
+    </p>
+</div>

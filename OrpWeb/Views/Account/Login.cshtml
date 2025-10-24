@@ -1,0 +1,174 @@
+﻿@using Shared.Common;
+@using Shared.Model.Request.Account;
+@model LoginRequest
+@{
+    Layout = null;
+    var isEmailNotVerified = ViewBag.ShowEmailVerificationPop;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    @await Html.PartialAsync("_AccountPagesCSSPartial")
+    <title>Login</title>
+    <style>
+        .backdrop-modal{
+        position:fixed;
+        left:0;
+        right:0;
+        top:0px;
+        bottom:0;
+        background:rgba(0,0,0,.5);
+        display:none;
+        }
+
+        .login_bg {
+            background-color: #0078D4;
+        }
+
+        h1 {
+            font-size: 30px;
+            font-weight: 700;
+        }
+
+        .form-control {
+            height: 48px;
+            background: #fff;
+            border-radius: 10px;
+            padding-left: 42px
+        }
+
+        .btn {
+            padding: 12px;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: 500;
+            background: #0078D4;
+        }
+
+        .forgot_text { font-weight: 500; }
+
+        .outer-box { max-width: 350px; }
+        label { display: block; }
+
+        .input_icon { position:absolute; top: 12px; left: 12px; }
+       
+    </style>
+</head>
+<body class="outer">
+
+    <!-- main-body -->
+    <main class="main-body">
+        <div class="content">
+            @Html.HiddenFor(m => isEmailNotVerified)
+            <!-- content -->
+            <div class="row flex-fill g-0" style="min-height:100vh">
+                <div class="col-md-6 d-flex align-items-center justify-content-center login_bg">
+                    <div class="d-flex p-3">
+                        <img src="~/assets/images/object-1.png" class="img-fluid"/>
+                    </div>
+                </div>
+                <div class="col-md-6 d-flex align-items-center justify-content-center" >
+                    <div class="outer-box">
+                        <div class="text-center mb-4"><img src="~/assets/images/logo.png" style="max-width:100px"/></div>
+                        <div class="outer-box-header mb-3">
+                            <h1>Login</h1>
+                        </div>
+                        <form asp-controller="Account" asp-action="Login" asp-area="" asp-ReturnUrl="@ViewBag.ReturnUrl" method="post" asp-antiforgery="true" class="form-horizontal" role="form" id="loginFrm">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" asp-for="ReturnUrl" />
+                            <div class="row g-3">
+                                <div class="col-md-12">
+                                    <label>Email</label>
+                                    <div class="position-relative">
+                                        <img src="~/assets/images/mailIcon.svg" class="input_icon"/>
+                                        <input type="text" asp-for=Email class="form-control input-email" placeholder="Email" maxlength="100" />
+                                    </div>
+                                    <span asp-validation-for="Email" class="text-danger"></span>
+                                </div>
+                                <div class="col-md-12">
+                                    <label>Password</label>
+                                    <div class="position-relative">
+                                        <img src="~/assets/images/passwordIcon.svg" class="input_icon" />
+                                        <input type="password" asp-for=Password class="form-control input-password" placeholder="Password" maxlength="20" />
+                                    </div>
+                                    <span asp-validation-for="Password" class="text-danger"></span>
+                                </div>
+                                
+                         
+                                <div style="text-align:center" class="text-danger">@ViewBag.message</div>
+                                <div class="col-md-12">
+                                    <button class="btn btn-primary w-100 text-center" type="submit">Log In</button>
+                                </div>
+
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div class="modal" id="loginmodel" tabindex="-1" aria-labelledby="loginmodel" aria-hidden="true" data-bs-backdrop="static">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">Modal title</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" onclick="ClosePopup()"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="loginmodelbody">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="backdrop-modal"></div>
+
+    <!-- Js -->
+    @await Html.PartialAsync("_JsScriptsPartial")
+    <script src="~/assets/js/jquery.cookie.min.js"></script>
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+    @await Html.PartialAsync("_CommonScriptsPartial")
+    <environment include="Development">
+        <script src="~/sitejs/loginsignup.js"></script>
+    </environment>
+    <environment exclude="Development">
+        <script src="~/js/loginsignup.min.js"></script>
+    </environment>
+</body>
+</html>
+
+<script>
+    $(document).ready(function () {
+        setTimezoneCookie();
+
+        if ($("#isEmailNotVerified").val().toString().toLowerCase() == 'true') {
+            ShowVerifyEmailPopup();
+        }
+    });
+
+    function ShowVerifyEmailPopup() {
+        
+        $.ajax({
+            type: "Get",
+            url: '/Account/VerifyEmail',
+            success: function (data) {
+                $('#loginmodelbody').html(data);
+            }, complete: function (data) {
+                $('#loginmodel').show();
+                $('.backdrop-modal').show();
+
+            },
+            error: function (data) {
+            }
+        });
+    }
+    
+    function ClosePopup() {
+        $('#loginmodel').hide();
+        $('.backdrop-modal').hide();
+    }
+</script>
